@@ -1,0 +1,106 @@
+════════════════════════════════════════════════════════════════
+    SCHÉMA DE CONNEXION ESP32-CAM - SYSTÈME RECONNAISSANCE FACIALE
+════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────┐
+│                      ESP32-CAM (AI-Thinker)                 │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  5V   ──────┬──────────→ Alimentation 5V (2A minimum)      │
+│  GND  ──────┼──────────→ Ground commun                     │
+│             │                                               │
+│             │   MODULE RELAIS                               │
+│             ├──────────→ VCC (5V)                          │
+│  GND  ──────┴──────────→ GND                               │
+│  GPIO12 ────────────────→ IN (Signal de contrôle)          │
+│                                                             │
+│  GPIO4  ─────────────────→ LED Flash (optionnel)           │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                       MODULE RELAIS                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  VCC ←── 5V (depuis ESP32-CAM ou source externe)           │
+│  GND ←── Ground                                             │
+│  IN  ←── GPIO12 (Signal de contrôle)                       │
+│                                                             │
+│  COM ──→ Alimentation de la charge                         │
+│  NO  ──→ Charge à contrôler (porte, serrure, LED, etc.)    │
+│  NC  ──→ Non utilisé                                        │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════
+                    PROGRAMMATION (Téléversement)
+═══════════════════════════════════════════════════════════════
+
+Avec programmateur FTDI:
+
+    FTDI              ESP32-CAM
+    ────────────      ──────────
+    5V     ────────→  5V
+    GND    ────────→  GND
+    TX     ────────→  U0R (RX)
+    RX     ────────→  U0T (TX)
+
+    Pour entrer en mode téléversement:
+    - Connecter GPIO0 à GND
+    - Appuyer sur RESET
+    - Téléverser le code
+    - Déconnecter GPIO0 de GND
+    - Appuyer sur RESET
+
+═══════════════════════════════════════════════════════════════
+                    EXEMPLES D'UTILISATION
+═══════════════════════════════════════════════════════════════
+
+1. SERRURE ÉLECTRIQUE (12V)
+   ───────────────────────────
+   Alimentation 12V ──→ Relais COM
+   Relais NO ──→ Serrure électrique (+)
+   Serrure électrique (-) ──→ GND
+
+2. LED INDICATEUR (5V)
+   ───────────────────
+   5V ──→ Relais COM
+   Relais NO ──→ Résistance (220Ω) ──→ LED (+)
+   LED (-) ──→ GND
+
+3. BUZZER/ALARME (12V)
+   ──────────────────────
+   12V ──→ Relais COM
+   Relais NO ──→ Buzzer (+)
+   Buzzer (-) ──→ GND
+
+═══════════════════════════════════════════════════════════════
+                    NOTES IMPORTANTES
+═══════════════════════════════════════════════════════════════
+
+⚠️  ALIMENTATION:
+    - ESP32-CAM nécessite minimum 2A (pics de courant)
+    - Ne pas alimenter via USB (insuffisant)
+    - Utiliser adaptateur secteur 5V/2A ou plus
+
+⚠️  SÉCURITÉ:
+    - Vérifier la tension maximale du relais
+    - Pour charges >10A, utiliser un relais de puissance
+    - Isoler correctement les parties haute tension
+
+⚠️  RELAIS:
+    - Relais actif niveau HAUT (HIGH)
+    - GPIO12 = HIGH → Relais fermé (charge alimentée)
+    - GPIO12 = LOW  → Relais ouvert (charge coupée)
+
+✓  PINS DISPONIBLES pour autres capteurs:
+    - GPIO13: Disponible
+    - GPIO14: Disponible
+    - GPIO15: Disponible
+
+✗  PINS À ÉVITER:
+    - GPIO0: Boot (utilisé pour programmation)
+    - GPIO1, GPIO3: UART (moniteur série)
+    - GPIO16: Connecté à PSRAM
+
+═══════════════════════════════════════════════════════════════
